@@ -1,0 +1,8 @@
+Issue Type,Key,Summary,Epic Link,Priority,Story Points,Labels,Component
+
+Epic,TEC-02,Dataverse,,,,"dataverse,data",Dataverse
+
+Story,TEC-005,Crear tablas base Dataverse,TEC-02,Highest,13,"dataverse,tables",Dataverse
+Story,TEC-006,Crear relaciones Dataverse,TEC-02,Highest,5,"dataverse,relations",Dataverse
+Story,TEC-007,Crear Choices Globales,TEC-02,Highest,3,"choices,dataverse",Dataverse
+Story,TEC-008,Configurar Alternate Keys,TEC-02,Highest,3,"keys,integrity",Dataverse
