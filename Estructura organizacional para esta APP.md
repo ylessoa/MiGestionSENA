@@ -8,11 +8,11 @@
         │                           │
         ▼                           ▼
 
-      COORDINADORES                            SUPERVISORES
+      COORDINADORES                          SUPERVISORES
 
       (Funcionarios)                   (Funcionarios)
 
       │                                 │
       ▼                                 ▼
 
-  FUNCIONARIOS                            CONTRATISTAS
+    FUNCIONARIOS                            CONTRATISTAS
