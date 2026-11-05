@@ -1,14 +1,15 @@
-Usuario
-    │
-    ├── Actividades
-    ├── Proyectos
-    ├── Compromisos
-    ├── Obligaciones
-    └── Evidencias
+Centro de Formación
+          │
+          ▼
+Ordenador del Gasto
+(Subdirector)
 
+          │
+ ┌────────┴────────┐
+ ▼                 ▼
 
-Usuario
-    │
-    └── EstructuraJerarquica
-                │
-                └── Usuario
+Coordinadores   Supervisores
+
+ ▼                 ▼
+
+Funcionarios   Contratistas
