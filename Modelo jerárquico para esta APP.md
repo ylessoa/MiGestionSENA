@@ -12,11 +12,11 @@
  
            ▼                  ▼
 
-Coordinadores             Supervisores
+          Coordinadores      Supervisores
 
 
 
- ▼                           ▼
+           ▼                           ▼
 
 
-Funcionarios             Contratistas
+          Funcionarios             Contratistas
