@@ -1,0 +1,21 @@
+LOGIN
+   │
+   ▼
+DASHBOARD
+   │
+   ├── Mi Día
+   │
+   ├── Actividades
+   │      ├── Crear
+   │      ├── Editar
+   │      └── Completar
+   │
+   ├── Proyectos
+   │
+   ├── Compromisos
+   │
+   ├── Obligaciones
+   │
+   ├── Evidencias
+   │
+   └── Indicadores
