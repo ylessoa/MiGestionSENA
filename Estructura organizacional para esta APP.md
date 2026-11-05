@@ -15,4 +15,4 @@
       │                                 │
       ▼                                 ▼
 
-  FUNCIONARIOS                    CONTRATISTAS
+  FUNCIONARIOS                        CONTRATISTAS
