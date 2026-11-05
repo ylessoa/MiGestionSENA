@@ -24,3 +24,17 @@ Feature: Gestión de usuarios
     Given un administrador autenticado
     When registra un usuario con datos válidos
     Then el usuario debe almacenarse correctamente
+  @REQ_US-006
+  @Negative
+  Scenario: Registrar usuario sin correo institucional
+    Given un administrador autenticado
+    When registra un usuario sin correo
+    Then el sistema debe impedir el registro
+
+  @REQ_US-006
+  @Negative
+  Scenario: Registrar usuario con correo inválido
+    Given un administrador autenticado
+    When registra un correo "usuario@@sena"
+    Then el sistema debe mostrar error de validación
+  
