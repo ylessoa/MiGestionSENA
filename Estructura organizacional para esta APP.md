@@ -8,7 +8,7 @@
         │                           │
         ▼                           ▼
 
-  COORDINADORES                            SUPERVISORES
+      COORDINADORES                            SUPERVISORES
 
       (Funcionarios)                   (Funcionarios)
 
