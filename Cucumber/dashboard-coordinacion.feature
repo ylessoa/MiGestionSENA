@@ -15,3 +15,11 @@ Feature: Dashboard coordinación
     Given el dashboard de coordinación
     When se muestran indicadores
     Then no deben mostrarse comparaciones individuales
+  @REQ_US-029
+  @Security
+  Scenario: Funcionario intenta acceder al dashboard de coordinación
+    Given un funcionario autenticado
+    When intenta acceder al dashboard de coordinación
+    Then el sistema debe denegar el acceso
+
+  
