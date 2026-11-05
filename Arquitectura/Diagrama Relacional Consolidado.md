@@ -1,32 +1,33 @@
-CentroFormacion
-      │
-      ▼
-Dependencia
-      │
-      ▼
-Usuario
- │
- ├─────────────┐
- │             │
- ▼             ▼
-Actividad   DiarioGestion
- │
- ├────────── Evidencia
- │
- ├────────── ActividadProyecto ───── Proyecto
- │
- ├────────── ActividadCompromiso ─── CompromisoDesempeno
- │
- ├────────── ActividadObligacion ─── ObligacionContractual
- │
- └────────── ActividadEtiqueta ───── Etiqueta
 
-Usuario
- │
- └── EstructuraJerarquica ── Usuario
+      CentroFormacion
+            │
+            ▼
+      Dependencia
+            │
+            ▼
+      Usuario
+       │
+       ├─────────────┐
+       │             │
+       ▼             ▼
+      Actividad   DiarioGestion
+       │
+       ├────────── Evidencia
+       │
+       ├────────── ActividadProyecto ───── Proyecto
+       │
+       ├────────── ActividadCompromiso ─── CompromisoDesempeno
+       │
+       ├────────── ActividadObligacion ─── ObligacionContractual
+       │
+       └────────── ActividadEtiqueta ───── Etiqueta
 
-Usuario
- │
- └── Auditoria
+      Usuario
+       │
+       └── EstructuraJerarquica ── Usuario
 
-CatalogoParametro
+      Usuario
+       │
+       └── Auditoria
+
+      CatalogoParametro
