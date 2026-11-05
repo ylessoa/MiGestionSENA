@@ -1,0 +1,8 @@
+Issue Type,Key,Summary,Epic Link,Priority,Story Points,Labels,Component
+
+Epic,TEC-03,Seguridad Dataverse,,,,"security,roles",Seguridad
+
+Story,TEC-009,Crear Security Roles,TEC-03,Highest,8,"securityroles",Dataverse
+Story,TEC-010,Configurar Field Security Profiles,TEC-03,Highest,5,"fieldsecurity",Dataverse
+Story,TEC-011,Configurar Hierarchy Security,TEC-03,High,8,"hierarchy",Dataverse
+Story,TEC-012,Configurar Teams de seguridad,TEC-03,High,5,"teams",Dataverse
