@@ -1,21 +1,22 @@
-Centro de Formación
+          Centro de Formación
 
-          │
-          ▼
+                    │
+                    ▼
           
-Ordenador del Gasto
-(Subdirector)
+          Ordenador del Gasto
+          (Subdirector)
 
-          │
+                    │
           
- ┌────────┴────────┐
+           ┌────────┴────────┐
  
- ▼                 ▼
+           ▼                  ▼
 
-Coordinadores   Supervisores
-
-
- ▼                 ▼
+Coordinadores             Supervisores
 
 
-Funcionarios   Contratistas
+
+ ▼                           ▼
+
+
+Funcionarios             Contratistas
