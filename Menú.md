@@ -2,14 +2,21 @@
 
 📅 Mi Día
 
-✅ Actividades
+✅ Mis Actividades
 
 📁 Proyectos
 
 🎯 Compromisos
+(Funcionarios)
+
+📋 Obligaciones
+(Contratistas)
 
 📎 Evidencias
 
-📊 Indicadores
+📊 Mi Avance
 
-👥 Supervisión
+👥 Equipo de Trabajo
+(Coordinadores, Supervisores y Ordenadores)
+
+⚙️ Mi Perfil
