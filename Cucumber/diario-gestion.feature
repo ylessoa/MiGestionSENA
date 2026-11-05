@@ -22,3 +22,16 @@ Feature: Diario de gestión
     Given un coordinador autenticado
     When intenta acceder al diario de otro usuario
     Then el acceso debe ser denegado
+@REQ_US-017
+@Negative
+Scenario: Crear más de un diario el mismo día
+  Given existe un diario registrado para hoy
+  When el usuario intenta registrar otro diario
+  Then el sistema debe impedirlo
+
+@REQ_US-017
+@Security
+Scenario: Administrador intenta modificar un diario
+  Given existe un diario registrado
+  When el administrador intenta editarlo
+  Then la operación debe estar restringida según la política definida
