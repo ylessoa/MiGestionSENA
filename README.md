@@ -13,3 +13,5 @@ Indicadores.
 Propósito:
 
 Facilitar que funcionarios y contratistas organicen su trabajo diario, gestionen sus compromisos y mantengan sus evidencias de forma ordenada, reduciendo la carga administrativa y mejorando la preparación de informes y reportes de gestión.
+
+La aplicación se concibe como una herramienta de apoyo voluntario a la organización del trabajo y gestión de evidencias, orientada a facilitar la planeación, ejecución y consolidación de actividades de funcionarios y contratistas. No constituye un mecanismo de control, evaluación o supervisión formal, sino un facilitador para la gestión diaria y la construcción de memoria institucional.
