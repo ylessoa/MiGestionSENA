@@ -10,7 +10,8 @@ Ordenador del Gasto
  ┌────────┴───          ─────┐
  ▼                           ▼
 
-Coordinadores             Supervisores
+Coordinadores            
+                     Supervisores
 
  ▼                           ▼
 
