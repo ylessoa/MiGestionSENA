@@ -1,6 +1,8 @@
   ORDENADOR DEL GASTO
   (Subdirector de Centro o Director Regional)
                       │
+                      
+                     
                       │
         ┌─────────────┴─────────────┐
         │                           │
