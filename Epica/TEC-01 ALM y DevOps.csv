@@ -1,0 +1,7 @@
+Issue Type,Key,Summary,Epic Link,Priority,Story Points,Labels,Component
+Epic,TEC-01,ALM y DevOps,,,,"alm,devops",Arquitectura
+
+Story,TEC-001,Configurar estrategia de soluciones,TEC-01,Highest,3,"alm,solution,publisher",PowerPlatform
+Story,TEC-002,Crear variables de entorno,TEC-01,Highest,3,"environment,configuration",PowerPlatform
+Story,TEC-003,Configurar pipeline DEV-TEST,TEC-01,Medium,5,"pipeline,devops",ALM
+Story,TEC-004,Configurar pipeline TEST-PROD,TEC-01,Medium,5,"pipeline,release",ALM
