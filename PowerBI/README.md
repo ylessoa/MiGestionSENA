@@ -1,12 +1,15 @@
-Dashboards Power BI
+Power BI
+Dashboards definidos para Mi Gestión SENA.
+
+Componentes
 Dashboard Personal
-Actividades
-Evidencias
-Cumplimiento
 Dashboard Coordinación
-Indicadores agregados
-Dependencias
 Dashboard Estratégico
-Centro
-Regional
-Institucional
+Fuente
+Dataverse
+
+Seguridad
+Row Level Security (RLS)
+
+Actualización
+Programada diariamente.
