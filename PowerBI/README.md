@@ -1,0 +1,12 @@
+Dashboards Power BI
+Dashboard Personal
+Actividades
+Evidencias
+Cumplimiento
+Dashboard Coordinación
+Indicadores agregados
+Dependencias
+Dashboard Estratégico
+Centro
+Regional
+Institucional
