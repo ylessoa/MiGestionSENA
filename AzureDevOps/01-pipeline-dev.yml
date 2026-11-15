@@ -1,0 +1,19 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: windows-latest
+
+steps:
+- task: PowerPlatformToolInstaller@2
+
+- task: PowerPlatformExportSolution@2
+  inputs:
+    authenticationType: PowerPlatformSPN
+    SolutionName: MiGestionSENA
+    SolutionOutputFile: $(Build.ArtifactStagingDirectory)\MiGestionSENA.zip
+
+- publish: $(Build.ArtifactStagingDirectory)
+  artifact: solution
