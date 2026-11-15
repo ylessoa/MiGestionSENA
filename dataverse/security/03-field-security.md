@@ -1,21 +1,26 @@
 Field Security Profiles
-MGS Sensitive Data
-Campos protegidos:
+Perfil: MGS Sensitive Data
+Campos protegidos
 
-mgs_documento
-mgs_correo
-mgs_urlsharepoint
+Documento
+Correo Institucional
+URL Evidencia
 Administrador
-Read: Sí Update: Sí Create: Sí
 
+Leer
+Crear
+Actualizar
 Coordinador
-Read: Sí Update: No
 
+Leer
 Supervisor
-Read: Sí Update: No
 
+Leer
 Funcionario
-Read: Propio Update: Propio
 
+Leer Propio
+Actualizar Propio
 Contratista
-Read: Propio Update: Propio
+
+Leer Propio
+Actualizar Propio
