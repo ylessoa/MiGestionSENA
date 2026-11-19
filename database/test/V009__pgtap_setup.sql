@@ -36,6 +36,22 @@ LIMPIEZA PREVIA
 
 DROP VIEW IF EXISTS test_mgs_types.v_test CASCADE;
 
+DROP TABLE IF EXISTS test_mgs_types.parent_partitioned_p1 CASCADE;
+DROP TABLE IF EXISTS test_mgs_types.parent_partitioned CASCADE;
+
+DROP TABLE IF EXISTS test_mgs_types.parent_multirange_unique CASCADE;
+DROP TABLE IF EXISTS test_mgs_types.parent_range_unique CASCADE;
+
+DROP TABLE IF EXISTS test_mgs_types.child_composite_unique CASCADE;
+DROP TABLE IF EXISTS test_mgs_types.parent_composite_unique CASCADE;
+
+DROP TABLE IF EXISTS test_mgs_types.t_uuid_array_domain CASCADE;
+DROP TABLE IF EXISTS test_mgs_types.t_uuid_array CASCADE;
+DROP TABLE IF EXISTS test_mgs_types.t_enum_array CASCADE;
+
+DROP TABLE IF EXISTS test_mgs_types.t_nested_multirange_domain CASCADE;
+DROP TABLE IF EXISTS test_mgs_types.t_nested_domain_enum CASCADE;
+
 DROP TABLE IF EXISTS test_mgs_types.child_multirange CASCADE;
 DROP TABLE IF EXISTS test_mgs_types.parent_multirange CASCADE;
 
@@ -57,6 +73,7 @@ DROP TABLE IF EXISTS test_mgs_types.child_array CASCADE;
 
 DROP TABLE IF EXISTS test_mgs_types.t_domain_multirange CASCADE;
 DROP TABLE IF EXISTS test_mgs_types.t_multirange CASCADE;
+
 DROP TABLE IF EXISTS test_mgs_types.t_range CASCADE;
 
 DROP TABLE IF EXISTS test_mgs_types.t_domain_enum CASCADE;
@@ -71,13 +88,21 @@ DROP TABLE IF EXISTS test_mgs_types.t_text_array CASCADE;
 DROP TABLE IF EXISTS test_mgs_types.t_nested_domain CASCADE;
 DROP TABLE IF EXISTS test_mgs_types.t_domain CASCADE;
 
+DROP TABLE IF EXISTS test_mgs_types.t_required CASCADE;
+
 DROP TABLE IF EXISTS test_mgs_types.t_numeric CASCADE;
 DROP TABLE IF EXISTS test_mgs_types.t_varchar CASCADE;
 DROP TABLE IF EXISTS test_mgs_types.t_uuid CASCADE;
 DROP TABLE IF EXISTS test_mgs_types.t_bigint CASCADE;
 
+DROP DOMAIN IF EXISTS test_mgs_types.uuid_array_domain CASCADE;
+
+DROP DOMAIN IF EXISTS test_mgs_types.periodos_domain_b CASCADE;
+DROP DOMAIN IF EXISTS test_mgs_types.periodos_domain_a CASCADE;
 DROP DOMAIN IF EXISTS test_mgs_types.periodos_domain CASCADE;
 
+DROP DOMAIN IF EXISTS test_mgs_types.estado_enum_b CASCADE;
+DROP DOMAIN IF EXISTS test_mgs_types.estado_enum_a CASCADE;
 DROP DOMAIN IF EXISTS test_mgs_types.estado_enum_domain CASCADE;
 
 DROP DOMAIN IF EXISTS test_mgs_types.ids_c CASCADE;
@@ -93,6 +118,22 @@ DROP DOMAIN IF EXISTS test_mgs_types.id_domain CASCADE;
 
 DROP TYPE IF EXISTS test_mgs_types.identificador_persona CASCADE;
 DROP TYPE IF EXISTS test_mgs_types.estado_enum CASCADE;
+
+/*==========================================================
+TIPOS
+==========================================================*/
+
+CREATE TYPE test_mgs_types.estado_enum
+AS ENUM (
+    'ACTIVO',
+    'INACTIVO'
+);
+
+CREATE TYPE test_mgs_types.identificador_persona
+AS (
+    documento text,
+    correo text
+);
 
 /*==========================================================
 DOMINIOS
@@ -114,7 +155,7 @@ CREATE DOMAIN test_mgs_types.id_domain
 AS bigint;
 
 /*==========================================================
-ARRAYS Y DOMINIOS SOBRE ARRAYS
+DOMINIOS ARRAY
 ==========================================================*/
 
 CREATE DOMAIN test_mgs_types.ids_base
@@ -130,34 +171,37 @@ CREATE DOMAIN test_mgs_types.ids_c
 AS test_mgs_types.ids_b;
 
 /*==========================================================
-ENUMS
+DOMINIOS ENUM
 ==========================================================*/
-
-CREATE TYPE test_mgs_types.estado_enum
-AS ENUM (
-    'ACTIVO',
-    'INACTIVO'
-);
 
 CREATE DOMAIN test_mgs_types.estado_enum_domain
 AS test_mgs_types.estado_enum;
 
-/*==========================================================
-TIPO COMPUESTO
-==========================================================*/
+CREATE DOMAIN test_mgs_types.estado_enum_a
+AS test_mgs_types.estado_enum;
 
-CREATE TYPE test_mgs_types.identificador_persona
-AS (
-    documento text,
-    correo text
-);
+CREATE DOMAIN test_mgs_types.estado_enum_b
+AS test_mgs_types.estado_enum_a;
 
 /*==========================================================
-MULTIRANGE
+DOMINIOS MULTIRANGE
 ==========================================================*/
 
 CREATE DOMAIN test_mgs_types.periodos_domain
 AS datemultirange;
+
+CREATE DOMAIN test_mgs_types.periodos_domain_a
+AS datemultirange;
+
+CREATE DOMAIN test_mgs_types.periodos_domain_b
+AS test_mgs_types.periodos_domain_a;
+
+/*==========================================================
+DOMINIOS UUID ARRAY
+==========================================================*/
+
+CREATE DOMAIN test_mgs_types.uuid_array_domain
+AS uuid[];
 
 /*==========================================================
 TABLAS TIPOS BASE
@@ -177,6 +221,10 @@ CREATE TABLE test_mgs_types.t_varchar (
 
 CREATE TABLE test_mgs_types.t_numeric (
     valor numeric(18,2)
+);
+
+CREATE TABLE test_mgs_types.t_required (
+    id bigint NOT NULL
 );
 
 /*==========================================================
@@ -199,12 +247,24 @@ CREATE TABLE test_mgs_types.t_text_array (
     etiquetas text[]
 );
 
+CREATE TABLE test_mgs_types.t_uuid_array (
+    ids uuid[]
+);
+
+CREATE TABLE test_mgs_types.t_enum_array (
+    estados test_mgs_types.estado_enum[]
+);
+
 CREATE TABLE test_mgs_types.t_domain_array (
     ids test_mgs_types.ids_base
 );
 
 CREATE TABLE test_mgs_types.t_nested_array_domain (
     ids test_mgs_types.ids_c
+);
+
+CREATE TABLE test_mgs_types.t_uuid_array_domain (
+    ids test_mgs_types.uuid_array_domain
 );
 
 /*==========================================================
@@ -217,6 +277,10 @@ CREATE TABLE test_mgs_types.t_enum (
 
 CREATE TABLE test_mgs_types.t_domain_enum (
     estado test_mgs_types.estado_enum_domain
+);
+
+CREATE TABLE test_mgs_types.t_nested_domain_enum (
+    estado test_mgs_types.estado_enum_b
 );
 
 /*==========================================================
@@ -243,6 +307,10 @@ CREATE TABLE test_mgs_types.child_range (
     vigencia daterange
 );
 
+CREATE TABLE test_mgs_types.parent_range_unique (
+    vigencia daterange UNIQUE
+);
+
 /*==========================================================
 TABLAS MULTIRANGE
 ==========================================================*/
@@ -255,6 +323,10 @@ CREATE TABLE test_mgs_types.t_domain_multirange (
     periodos test_mgs_types.periodos_domain
 );
 
+CREATE TABLE test_mgs_types.t_nested_multirange_domain (
+    periodos test_mgs_types.periodos_domain_b
+);
+
 CREATE TABLE test_mgs_types.parent_multirange (
     vigencias datemultirange
 );
@@ -263,8 +335,12 @@ CREATE TABLE test_mgs_types.child_multirange (
     vigencias datemultirange
 );
 
+CREATE TABLE test_mgs_types.parent_multirange_unique (
+    vigencias datemultirange UNIQUE
+);
+
 /*==========================================================
-FK CORRECTAS
+FK COMPATIBLES
 ==========================================================*/
 
 CREATE TABLE test_mgs_types.parent_fk (
@@ -280,7 +356,7 @@ CREATE TABLE test_mgs_types.child_bad_fk (
 );
 
 /*==========================================================
-FK CON DOMINIOS
+FK DOMINIOS
 ==========================================================*/
 
 CREATE TABLE test_mgs_types.parent_domain (
@@ -296,16 +372,12 @@ CREATE TABLE test_mgs_types.child_bigint (
 );
 
 /*==========================================================
-FK PADRE NO REFERENCIABLE
+FK NEGATIVAS
 ==========================================================*/
 
 CREATE TABLE test_mgs_types.parent_no_unique (
     id bigint
 );
-
-/*==========================================================
-FK ARRAYS
-==========================================================*/
 
 CREATE TABLE test_mgs_types.parent_array (
     ids bigint[]
@@ -315,14 +387,55 @@ CREATE TABLE test_mgs_types.child_array (
     ids bigint[]
 );
 
+CREATE TABLE test_mgs_types.parent_composite_unique (
+
+    codigo bigint NOT NULL,
+    centro bigint NOT NULL,
+
+    CONSTRAINT uq_parent_composite
+        UNIQUE (codigo, centro)
+
+);
+
+CREATE TABLE test_mgs_types.child_composite_unique (
+    codigo bigint
+);
+
 /*==========================================================
-VISTA PARA PRUEBA NEGATIVA
+TABLA PARTICIONADA
+==========================================================*/
+
+CREATE TABLE test_mgs_types.parent_partitioned (
+
+    id bigint NOT NULL,
+
+    CONSTRAINT pk_parent_partitioned
+        PRIMARY KEY (id)
+
+)
+PARTITION BY RANGE (id);
+
+CREATE TABLE test_mgs_types.parent_partitioned_p1
+PARTITION OF test_mgs_types.parent_partitioned
+FOR VALUES FROM (1) TO (1000);
+
+/*==========================================================
+VISTA NEGATIVA
 ==========================================================*/
 
 CREATE VIEW test_mgs_types.v_test
 AS
-SELECT
-    1::bigint AS id;
+SELECT 1::bigint AS id;
+
+/*==========================================================
+DATOS DE APOYO
+==========================================================*/
+
+INSERT INTO test_mgs_types.parent_fk(id)
+VALUES (1);
+
+INSERT INTO test_mgs_types.parent_domain(id)
+VALUES (1);
 
 /*==========================================================
 VERIFICACIONES BÁSICAS
@@ -335,19 +448,18 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1
         FROM pg_namespace
-        WHERE nspname = 'test_mgs_types'
+        WHERE nspname='test_mgs_types'
     )
     THEN
         RAISE EXCEPTION
-        'No se creó test_mgs_types';
+        'No se creó el esquema test_mgs_types';
     END IF;
 
     IF NOT EXISTS (
         SELECT 1
         FROM pg_type
-        WHERE typname = 'estado_enum'
-          AND typnamespace =
-              'test_mgs_types'::regnamespace
+        WHERE typname='estado_enum'
+          AND typnamespace='test_mgs_types'::regnamespace
     )
     THEN
         RAISE EXCEPTION
