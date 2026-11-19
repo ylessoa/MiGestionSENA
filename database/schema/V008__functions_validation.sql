@@ -4,21 +4,19 @@ MiGestionSENA
 V008__functions_validation.sql
 ==========================================================
 
-Funciones incluidas:
+Funciones incluidas
 
-1. fn_resolve_regtype_safe
-2. fn_resolve_type_hierarchy
-3. fn_assert_column_definition
-4. fn_assert_fk_compatible
+- mgs.fn_resolve_regtype_safe
+- mgs.fn_resolve_type_hierarchy
+- mgs.fn_assert_column_definition
+- mgs.fn_assert_fk_compatible
 
-Compatible con PostgreSQL 16
+Compatible con PostgreSQL 16.
 ==========================================================
 */
 
-SET search_path TO mgs;
-
 /*==========================================================
-RESOLUCIÓN SEGURA DE REGTYPE
+fn_resolve_regtype_safe
 ==========================================================*/
 
 CREATE OR REPLACE FUNCTION
@@ -57,7 +55,7 @@ END;
 $$;
 
 /*==========================================================
-RESOLUCIÓN DE JERARQUÍA DE TIPOS
+fn_resolve_type_hierarchy
 ==========================================================*/
 
 CREATE OR REPLACE FUNCTION
@@ -72,9 +70,9 @@ RETURNS TABLE(
 
     root_type_name text,
 
-    declared_category char,
+    declared_typtype char,
 
-    root_category char,
+    root_typtype char,
 
     is_array boolean,
 
@@ -188,7 +186,7 @@ END;
 $$;
 
 /*==========================================================
-VALIDACIÓN DE DEFINICIÓN DE COLUMNAS
+fn_assert_column_definition
 ==========================================================*/
 
 CREATE OR REPLACE FUNCTION
@@ -217,8 +215,8 @@ DECLARE
 
     v_type_oid oid;
 
-    v_declared_category char;
-    v_root_category char;
+    v_declared_typtype char;
+    v_root_typtype char;
 
     v_root_oid oid;
     v_root_name text;
@@ -235,9 +233,16 @@ DECLARE
 
 BEGIN
 
-    /*------------------------------------
-      SCHEMA
-    ------------------------------------*/
+    IF p_schema IS NULL
+       OR p_table IS NULL
+       OR p_column IS NULL
+    THEN
+
+        RAISE EXCEPTION USING
+            ERRCODE='22004',
+            MESSAGE='Parámetros obligatorios no pueden ser NULL';
+
+    END IF;
 
     IF NOT EXISTS (
         SELECT 1
@@ -255,14 +260,9 @@ BEGIN
 
     END IF;
 
-    /*------------------------------------
-      TABLA
-    ------------------------------------*/
-
     IF NOT EXISTS (
 
         SELECT 1
-
         FROM pg_class c
         JOIN pg_namespace n
             ON n.oid = c.relnamespace
@@ -283,10 +283,6 @@ BEGIN
             );
 
     END IF;
-
-    /*------------------------------------
-      COLUMNA
-    ------------------------------------*/
 
     SELECT a.atttypid
       INTO v_type_oid
@@ -314,13 +310,9 @@ BEGIN
 
     END IF;
 
-    /*------------------------------------
-      METADATA
-    ------------------------------------*/
-
     SELECT
-        declared_category,
-        root_category,
+        declared_typtype,
+        root_typtype,
         root_type_oid,
         root_type_name,
         is_array,
@@ -329,8 +321,8 @@ BEGIN
         is_range,
         is_multirange
     INTO
-        v_declared_category,
-        v_root_category,
+        v_declared_typtype,
+        v_root_typtype,
         v_root_oid,
         v_root_name,
         v_is_array,
@@ -338,10 +330,9 @@ BEGIN
         v_root_element_name,
         v_is_range,
         v_is_multirange
-    FROM
-        mgs.fn_resolve_type_hierarchy(
-            v_type_oid
-        );
+    FROM mgs.fn_resolve_type_hierarchy(
+        v_type_oid
+    );
 
     IF NOT FOUND THEN
 
@@ -350,10 +341,6 @@ BEGIN
             MESSAGE='No fue posible resolver metadatos del tipo';
 
     END IF;
-
-    /*------------------------------------
-      RESOLUCIÓN DE TIPOS ESPERADOS
-    ------------------------------------*/
 
     IF p_expected_type IS NOT NULL THEN
 
@@ -373,11 +360,7 @@ BEGIN
 
     END IF;
 
-    /*------------------------------------
-      DOMINIOS
-    ------------------------------------*/
-
-    IF v_declared_category = 'd'
+    IF v_declared_typtype = 'd'
        AND NOT p_allow_domains
     THEN
 
@@ -391,10 +374,6 @@ BEGIN
             );
 
     END IF;
-
-    /*------------------------------------
-      ARRAYS
-    ------------------------------------*/
 
     IF v_is_array THEN
 
@@ -441,10 +420,6 @@ BEGIN
 
     END IF;
 
-    /*------------------------------------
-      CATEGORÍAS
-    ------------------------------------*/
-
     IF p_expected_category IS NOT NULL THEN
 
         CASE p_expected_category
@@ -471,13 +446,13 @@ BEGIN
 
             ELSE
 
-                IF v_root_category <> p_expected_category THEN
+                IF v_root_typtype <> p_expected_category THEN
 
                     RAISE EXCEPTION USING
                         ERRCODE='22023',
                         MESSAGE=format(
                             'Categoría inválida. Encontrado %s, esperado %s',
-                            v_root_category,
+                            v_root_typtype,
                             p_expected_category
                         );
 
@@ -486,10 +461,6 @@ BEGIN
         END CASE;
 
     END IF;
-
-    /*------------------------------------
-      TIPO RAÍZ
-    ------------------------------------*/
 
     IF p_expected_type IS NOT NULL
        AND v_root_oid <> v_expected_type_oid
@@ -512,7 +483,7 @@ END;
 $$;
 
 /*==========================================================
-VALIDACIÓN DE COMPATIBILIDAD FK
+fn_assert_fk_compatible
 ==========================================================*/
 
 CREATE OR REPLACE FUNCTION
@@ -539,8 +510,8 @@ DECLARE
     v_parent_root oid;
     v_child_root oid;
 
-    v_parent_category char;
-    v_child_category char;
+    v_parent_typtype char;
+    v_child_typtype char;
 
     v_parent_element oid;
     v_child_element oid;
@@ -555,6 +526,20 @@ DECLARE
     v_child_multirange boolean;
 
 BEGIN
+
+    IF p_parent_schema IS NULL
+       OR p_parent_table IS NULL
+       OR p_parent_column IS NULL
+       OR p_child_schema IS NULL
+       OR p_child_table IS NULL
+       OR p_child_column IS NULL
+    THEN
+
+        RAISE EXCEPTION USING
+            ERRCODE='22004',
+            MESSAGE='Parámetros obligatorios no pueden ser NULL';
+
+    END IF;
 
     PERFORM mgs.fn_assert_column_definition(
         p_parent_schema,
@@ -571,10 +556,8 @@ BEGIN
     SELECT a.atttypid
     INTO v_parent_oid
     FROM pg_attribute a
-    JOIN pg_class c
-        ON c.oid = a.attrelid
-    JOIN pg_namespace n
-        ON n.oid = c.relnamespace
+    JOIN pg_class c ON c.oid = a.attrelid
+    JOIN pg_namespace n ON n.oid = c.relnamespace
     WHERE n.nspname = p_parent_schema
       AND c.relname = p_parent_table
       AND a.attname = p_parent_column
@@ -584,10 +567,8 @@ BEGIN
     SELECT a.atttypid
     INTO v_child_oid
     FROM pg_attribute a
-    JOIN pg_class c
-        ON c.oid = a.attrelid
-    JOIN pg_namespace n
-        ON n.oid = c.relnamespace
+    JOIN pg_class c ON c.oid = a.attrelid
+    JOIN pg_namespace n ON n.oid = c.relnamespace
     WHERE n.nspname = p_child_schema
       AND c.relname = p_child_table
       AND a.attname = p_child_column
@@ -596,91 +577,87 @@ BEGIN
 
     SELECT
         root_type_oid,
-        root_category,
+        root_typtype,
         root_element_oid,
         is_array,
         is_range,
         is_multirange
     INTO
         v_parent_root,
-        v_parent_category,
+        v_parent_typtype,
         v_parent_element,
         v_parent_array,
         v_parent_range,
         v_parent_multirange
-    FROM mgs.fn_resolve_type_hierarchy(
-        v_parent_oid
-    );
+    FROM mgs.fn_resolve_type_hierarchy(v_parent_oid);
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION USING
+            ERRCODE='42704',
+            MESSAGE='No fue posible resolver el tipo de la columna padre';
+    END IF;
 
     SELECT
         root_type_oid,
-        root_category,
+        root_typtype,
         root_element_oid,
         is_array,
         is_range,
         is_multirange
     INTO
         v_child_root,
-        v_child_category,
+        v_child_typtype,
         v_child_element,
         v_child_array,
         v_child_range,
         v_child_multirange
-    FROM mgs.fn_resolve_type_hierarchy(
-        v_child_oid
-    );
+    FROM mgs.fn_resolve_type_hierarchy(v_child_oid);
 
-    /*------------------------------------
-      RESTRICCIONES FK
-    ------------------------------------*/
+    IF NOT FOUND THEN
+        RAISE EXCEPTION USING
+            ERRCODE='42704',
+            MESSAGE='No fue posible resolver el tipo de la columna hija';
+    END IF;
 
-    IF v_parent_array
-       OR v_child_array
-    THEN
-
+    IF v_parent_array OR v_child_array THEN
         RAISE EXCEPTION USING
             ERRCODE='42804',
             MESSAGE='Las claves foráneas no pueden definirse sobre arrays';
-
     END IF;
 
-    IF v_parent_range
-       OR v_child_range
-    THEN
-
+    IF v_parent_range OR v_child_range THEN
         RAISE EXCEPTION USING
             ERRCODE='42804',
             MESSAGE='Las claves foráneas no pueden definirse sobre RANGE';
-
     END IF;
 
-    IF v_parent_multirange
-       OR v_child_multirange
-    THEN
-
+    IF v_parent_multirange OR v_child_multirange THEN
         RAISE EXCEPTION USING
             ERRCODE='42804',
             MESSAGE='Las claves foráneas no pueden definirse sobre MULTIRANGE';
-
     END IF;
-
-    /*------------------------------------
-      COMPATIBILIDAD
-    ------------------------------------*/
 
     IF v_parent_root <> v_child_root THEN
 
         RAISE EXCEPTION USING
             ERRCODE='42804',
-            MESSAGE='Tipos raíz incompatibles';
+            MESSAGE=format(
+                'Tipos raíz incompatibles: padre=%s hijo=%s',
+                v_parent_root,
+                v_child_root
+            );
 
     END IF;
 
-    IF v_parent_category <> v_child_category THEN
+    IF v_parent_typtype <> v_child_typtype THEN
 
         RAISE EXCEPTION USING
             ERRCODE='42804',
-            MESSAGE='Categorías incompatibles';
+            MESSAGE=format(
+                'Categorías incompatibles: padre=%s hijo=%s',
+                v_parent_typtype,
+                v_child_typtype
+            );
 
     END IF;
 
@@ -690,13 +667,13 @@ BEGIN
 
         RAISE EXCEPTION USING
             ERRCODE='42804',
-            MESSAGE='Elementos incompatibles';
+            MESSAGE=format(
+                'Elementos incompatibles: padre=%s hijo=%s',
+                COALESCE(v_parent_element,0),
+                COALESCE(v_child_element,0)
+            );
 
     END IF;
-
-    /*------------------------------------
-      PK O UNIQUE PADRE
-    ------------------------------------*/
 
     IF NOT EXISTS (
 
@@ -722,6 +699,7 @@ BEGIN
           AND t.relname = p_parent_table
           AND a.attname = p_parent_column
           AND pc.contype IN ('p','u')
+          AND array_length(pc.conkey,1) = 1
 
     )
     THEN
@@ -729,7 +707,7 @@ BEGIN
         RAISE EXCEPTION USING
             ERRCODE='42830',
             MESSAGE=format(
-                'La columna %s.%s.%s debe ser PRIMARY KEY o UNIQUE',
+                'La columna %s.%s.%s debe ser PRIMARY KEY o UNIQUE de una sola columna',
                 p_parent_schema,
                 p_parent_table,
                 p_parent_column
