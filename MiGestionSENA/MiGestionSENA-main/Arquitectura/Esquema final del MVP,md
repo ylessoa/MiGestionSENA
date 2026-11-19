@@ -1,0 +1,16 @@
+CentroFormacion
+   
+      │
+  Dependencia
+        │
+  Usuario
+        │
+   ├── Actividad
+   │      ├── Proyecto
+   │      ├── Compromiso
+   │      ├── Obligacion
+   │      └── Evidencia
+   │
+   ├── DiarioGestion
+   │
+   └── Auditoria

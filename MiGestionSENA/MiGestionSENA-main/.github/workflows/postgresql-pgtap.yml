@@ -1,0 +1,162 @@
+name: PostgreSQL 16 - pgTAP Validation
+
+on:
+
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+
+  workflow_dispatch:
+
+jobs:
+
+  postgres-validation:
+
+    runs-on: ubuntu-latest
+
+    services:
+
+      postgres:
+
+        image: postgres:16
+
+        env:
+          POSTGRES_DB: mgs
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd="pg_isready -U postgres -d mgs"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+
+      PGHOST: localhost
+      PGPORT: 5432
+      PGDATABASE: mgs
+      PGUSER: postgres
+      PGPASSWORD: postgres
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Install pgTAP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+              pgtap \
+              libtap-harness-archive-perl \
+              libtap-parser-sourcehandler-pgtap-perl
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres -d mgs
+          do
+            sleep 2
+          done
+
+      - name: Create Evidence Directory
+        run: |
+          mkdir -p evidence
+
+      - name: Record Versions
+        run: |
+          {
+            echo "=== PostgreSQL ==="
+            psql -c "SELECT version();"
+
+            echo
+            echo "=== pgTAP ==="
+            psql -c "CREATE EXTENSION IF NOT EXISTS pgtap;"
+            psql -c "
+              SELECT extname,
+                     extversion
+              FROM pg_extension
+              WHERE extname='pgtap';
+            "
+
+          } > evidence/01_versions.txt
+
+      - name: Execute Schema
+        run: |
+
+          psql -v ON_ERROR_STOP=1 \
+            -f database/schema/V001__schema.sql
+
+          psql -v ON_ERROR_STOP=1 \
+            -f database/schema/V002__catalogos.sql
+
+          psql -v ON_ERROR_STOP=1 \
+            -f database/schema/V003__modelo_mgs.sql
+
+          psql -v ON_ERROR_STOP=1 \
+            -f database/schema/V004__catalogo_tarea_esencial.sql
+
+          psql -v ON_ERROR_STOP=1 \
+            -f database/schema/V005__roles_permisos.sql
+
+          psql -v ON_ERROR_STOP=1 \
+            -f database/schema/V006__indices.sql
+
+          psql -v ON_ERROR_STOP=1 \
+            -f database/schema/V007__vistas.sql
+
+          psql -v ON_ERROR_STOP=1 \
+            -f database/schema/V008__functions_validation.sql
+
+      - name: Setup pgTAP Objects
+        run: |
+          psql -v ON_ERROR_STOP=1 \
+            -f database/test/V009__pgtap_setup.sql \
+            | tee evidence/02_setup_output.txt
+
+      - name: Execute pgTAP Suite
+        run: |
+          pg_prove \
+            --verbose \
+            database/test/V010__pgtap_tests.sql \
+            | tee evidence/03_pgprove_output.txt
+
+      - name: Capture TAP Output
+        run: |
+          psql \
+            -f database/test/V010__pgtap_tests.sql \
+            > evidence/04_tap_output.txt
+
+      - name: Record Commit
+        run: |
+          git rev-parse HEAD \
+            > evidence/05_git_commit.txt
+
+      - name: Teardown
+        if: always()
+        run: |
+          if [ -f database/test/V011__pgtap_teardown.sql ]; then
+            psql \
+              -v ON_ERROR_STOP=1 \
+              -f database/test/V011__pgtap_teardown.sql \
+              > evidence/06_teardown_output.txt
+          fi
+
+      - name: Upload Evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-pgtap-evidence
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 30

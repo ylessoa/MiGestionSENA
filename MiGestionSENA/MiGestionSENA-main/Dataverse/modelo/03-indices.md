@@ -1,0 +1,21 @@
+Índices Recomendados
+mgs_usuario
+mgs_documento
+mgs_correo
+mgs_actividad
+mgs_fechaactividad
+mgs_estado
+mgs_responsable
+mgs_proyecto
+mgs_responsable
+mgs_avance
+mgs_obligacioncontractual
+mgs_fechalimite
+mgs_compromisodesempeno
+mgs_funcionario
+mgs_evidencia
+mgs_actividad
+mgs_fechacarga
+mgs_auditoria
+mgs_usuario
+mgs_fecha
