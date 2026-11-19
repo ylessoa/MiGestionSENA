@@ -16,7 +16,7 @@ Compatible con PostgreSQL 16
 
 BEGIN;
 
-SELECT plan(36);
+SELECT plan(38);
 
 ----------------------------------------------------------
 -- TIPOS BASE
