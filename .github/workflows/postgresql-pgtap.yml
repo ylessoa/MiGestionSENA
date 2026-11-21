@@ -16,26 +16,6 @@ jobs:
 
     timeout-minutes: 15
 
-    services:
-
-      postgres:
-
-        image: postgres:16
-
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: migracionsena
-
-        ports:
-          - 5432:5432
-
-        options: >-
-          --health-cmd "pg_isready -U postgres -d migracionsena"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-
     env:
       PGHOST: localhost
       PGPORT: 5432
@@ -60,6 +40,56 @@ jobs:
           ls -la
           find database -type f | sort
 
+      - name: Instalar PostgreSQL 16 y pgTAP
+        run: |
+          set -euo pipefail
+
+          sudo systemctl stop postgresql || true
+
+          sudo apt-get update
+
+          sudo apt-get install -y \
+            postgresql \
+            postgresql-contrib \
+            postgresql-client \
+            postgresql-16-pgtap \
+            pgtap
+
+      - name: Iniciar PostgreSQL
+        run: |
+          set -euo pipefail
+
+          sudo systemctl start postgresql
+
+          for i in {1..30}
+          do
+            pg_isready -h localhost -p 5432 -U postgres && break
+            sleep 2
+          done
+
+      - name: Crear base de datos de pruebas
+        run: |
+          set -euo pipefail
+
+          sudo -u postgres psql \
+            -c "ALTER USER postgres PASSWORD 'postgres';"
+
+          psql \
+            -h localhost \
+            -U postgres \
+            -d postgres \
+            -c "
+              DROP DATABASE IF EXISTS migracionsena;
+            "
+
+          psql \
+            -h localhost \
+            -U postgres \
+            -d postgres \
+            -c "
+              CREATE DATABASE migracionsena;
+            "
+
       - name: Verificar archivos requeridos
         run: |
           set -euo pipefail
@@ -78,33 +108,6 @@ jobs:
           test -f database/test/V010__pgtap_tests.sql
           test -f database/test/V011__pgtap_teardown.sql
 
-      - name: Instalar cliente PostgreSQL
-        run: |
-          set -euo pipefail
-
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-
-      - name: Esperar PostgreSQL
-        run: |
-          set -euo pipefail
-
-          for i in {1..30}
-          do
-            pg_isready -h localhost -p 5432 -U postgres && exit 0
-            sleep 2
-          done
-
-          echo "PostgreSQL no responde"
-          exit 1
-
-      - name: Instalar pgTAP
-        run: |
-          set -euo pipefail
-
-          sudo apt-get update
-          sudo apt-get install -y pgtap
-
       - name: Registrar versiones
         run: |
           set -euo pipefail
@@ -114,19 +117,23 @@ jobs:
             psql --version
 
             echo
-            echo "=== EXTENSIONES ==="
+            echo "=== PGTAP ==="
 
             psql \
               -v ON_ERROR_STOP=1 \
-              -c "CREATE EXTENSION IF NOT EXISTS pgtap CASCADE;"
+              -d migracionsena \
+              -c "
+                CREATE EXTENSION IF NOT EXISTS pgtap;
+              "
 
             psql \
               -v ON_ERROR_STOP=1 \
+              -d migracionsena \
               -c "
                 SELECT extname,
                        extversion
                 FROM pg_extension
-                WHERE extname = 'pgtap';
+                WHERE extname='pgtap';
               "
 
           } | tee evidence/01_versions.txt
@@ -154,6 +161,7 @@ jobs:
 
             psql \
               -v ON_ERROR_STOP=1 \
+              -d migracionsena \
               -f "$file"
 
           done | tee evidence/02_schema_output.txt
@@ -164,6 +172,7 @@ jobs:
 
           psql \
             -v ON_ERROR_STOP=1 \
+            -d migracionsena \
             -c "
               SELECT rolname
               FROM pg_roles
@@ -178,6 +187,7 @@ jobs:
 
           psql \
             -v ON_ERROR_STOP=1 \
+            -d migracionsena \
             -f database/test/V009__pgtap_setup.sql \
             | tee evidence/03_setup_output.txt
 
@@ -187,6 +197,7 @@ jobs:
 
           psql \
             -v ON_ERROR_STOP=1 \
+            -d migracionsena \
             -f database/test/V010__pgtap_tests.sql \
             | tee evidence/04_pgtap_output.txt
 
@@ -195,10 +206,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          mkdir -p evidence
-
           psql \
             -v ON_ERROR_STOP=1 \
+            -d migracionsena \
             -f database/test/V011__pgtap_teardown.sql \
             | tee evidence/05_teardown_output.txt
 
