@@ -1,12 +1,14 @@
-name: PostgreSQL 16 - Validacion de pgTAP
+name: PostgreSQL 16 - Validación de pgTAP
 
 on:
   push:
     branches:
       - main
+
   workflow_dispatch:
 
 jobs:
+
   postgres-validation:
 
     runs-on: ubuntu-latest
@@ -45,23 +47,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Mostrar estructura proyecto
+      - name: Crear carpeta evidencia
+        run: |
+          mkdir -p evidence
+
+      - name: Mostrar estructura del proyecto
         run: |
           pwd
           ls -la
           find database -type f | sort
 
-      - name: Instalar PostgreSQL client
+      - name: Instalar cliente PostgreSQL
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-
-      - name: Instalar pgTAP
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            postgresql-16-pgtap \
-            pgtap
 
       - name: Esperar PostgreSQL
         run: |
@@ -74,17 +73,20 @@ jobs:
           echo "PostgreSQL no responde"
           exit 1
 
-      - name: Versiones
+      - name: Instalar pgTAP
         run: |
+          sudo apt-get update
+          sudo apt-get install -y pgtap
 
-          mkdir -p evidence
+      - name: Registrar versiones
+        run: |
 
           {
             echo "=== POSTGRES ==="
             psql --version
 
             echo
-            echo "=== PGTAP ==="
+            echo "=== EXTENSIONES ==="
 
             psql \
               -v ON_ERROR_STOP=1 \
@@ -111,15 +113,14 @@ jobs:
             database/schema/V007__vistas.sql \
             database/schema/V008__functions_validation.sql
           do
-
-            echo "================================="
-            echo "Ejecutando $file"
-            echo "================================="
+            echo ""
+            echo "============================================"
+            echo "Ejecutando: $file"
+            echo "============================================"
 
             psql \
               -v ON_ERROR_STOP=1 \
               -f "$file"
-
           done | tee evidence/02_schema_output.txt
 
       - name: Ejecutar setup pgTAP
@@ -133,7 +134,6 @@ jobs:
       - name: Ejecutar pruebas pgTAP
         run: |
 
-          timeout 300s \
           psql \
             -v ON_ERROR_STOP=1 \
             -f database/test/V010__pgtap_tests.sql \
@@ -143,20 +143,24 @@ jobs:
         if: always()
         run: |
 
+          mkdir -p evidence
+
           psql \
             -v ON_ERROR_STOP=1 \
             -f database/test/V011__pgtap_teardown.sql \
             | tee evidence/05_teardown_output.txt
 
-      - name: Commit ejecutado
+      - name: Registrar commit
+        if: always()
         run: |
 
           git rev-parse HEAD \
             | tee evidence/06_git_commit.txt
 
-      - name: Artefactos
+      - name: Publicar artefactos
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: postgres-pgtap-evidence
-          path: evidence/
+          path: evidence/**
+          if-no-files-found: warn
