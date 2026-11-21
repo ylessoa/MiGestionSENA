@@ -8,14 +8,20 @@ Security Hardening
 
 Objetivos:
 
-- Revocar permisos PUBLIC.
-- Crear roles especializados.
+- Revocar accesos PUBLIC.
 - Aplicar principio de mínimo privilegio.
-- Restringir funciones administrativas.
-- Separar accesos de aplicación,
-  automatización, BI y auditoría.
+- Crear roles especializados.
+- Segregar acceso aplicación/BI/automatización.
+- Proteger funciones internas.
+- Configurar privilegios por defecto.
 
-Compatible con PostgreSQL 16.
+Dependencias:
+
+V001__schema.sql
+V005__roles_permisos.sql
+V008__functions_validation.sql
+
+Compatible con PostgreSQL 16
 ==========================================================
 */
 
@@ -87,7 +93,7 @@ END;
 $$;
 
 /*==========================================================
-REVOCAR ACCESOS PUBLIC
+REVOCACIÓN GLOBAL
 ==========================================================*/
 
 REVOKE ALL
@@ -119,10 +125,11 @@ TO
     mgs_bi,
     mgs_automation,
     mgs_auditor,
+    mgs_data_quality,
     mgs_readonly;
 
 /*==========================================================
-LECTURA
+LECTURA OPERATIVA
 ==========================================================*/
 
 GRANT SELECT
@@ -134,7 +141,7 @@ TO
     mgs_readonly;
 
 /*==========================================================
-ESCRITURA APLICACIÓN
+ESCRITURA CONTROLADA
 ==========================================================*/
 
 GRANT
@@ -155,91 +162,60 @@ GRANT
     SELECT
 ON ALL SEQUENCES IN SCHEMA mgs
 TO
+    mgs_admin,
     mgs_app_write,
-    mgs_automation,
+    mgs_automation;
+
+/*==========================================================
+FUNCIONES DEL ESQUEMA
+==========================================================*/
+
+GRANT EXECUTE
+ON ALL FUNCTIONS IN SCHEMA mgs
+TO
     mgs_admin;
 
-/*==========================================================
-PROTEGER FUNCIONES DE VALIDACIÓN
-==========================================================*/
-
-/*
-V008
-*/
-
-REVOKE ALL
-ON FUNCTION mgs.fn_resolve_regtype_safe(text)
-FROM PUBLIC;
-
-REVOKE ALL
-ON FUNCTION mgs.fn_resolve_type_hierarchy(regtype)
-FROM PUBLIC;
-
-/*
-Ajustar las firmas exactamente
-si V008 difiere.
-*/
-
 GRANT EXECUTE
-ON FUNCTION mgs.fn_resolve_regtype_safe(text)
+ON ALL FUNCTIONS IN SCHEMA mgs
 TO
-    mgs_admin,
     mgs_app_write;
 
 GRANT EXECUTE
-ON FUNCTION mgs.fn_resolve_type_hierarchy(regtype)
+ON ALL FUNCTIONS IN SCHEMA mgs
 TO
-    mgs_admin,
-    mgs_app_write;
+    mgs_automation;
 
 /*==========================================================
-VISTAS
+PROHIBICIÓN EXPLÍCITA
 ==========================================================*/
 
+REVOKE EXECUTE
+ON ALL FUNCTIONS IN SCHEMA mgs
+FROM
+    mgs_readonly,
+    mgs_bi,
+    mgs_auditor,
+    mgs_data_quality;
+
+/*==========================================================
+PRIVILEGIOS FUTUROS - TABLAS
+==========================================================*/
+
+ALTER DEFAULT PRIVILEGES
+IN SCHEMA mgs
+REVOKE ALL
+ON TABLES
+FROM PUBLIC;
+
+ALTER DEFAULT PRIVILEGES
+IN SCHEMA mgs
 GRANT SELECT
-ON ALL TABLES IN SCHEMA mgs
-TO
-    mgs_bi;
-
-GRANT SELECT
-ON ALL TABLES IN SCHEMA mgs
-TO
-    mgs_auditor;
-
-/*==========================================================
-PERMISOS FUTUROS
-==========================================================*/
-
-ALTER DEFAULT PRIVILEGES
-IN SCHEMA mgs
-REVOKE ALL ON TABLES
-FROM PUBLIC;
-
-ALTER DEFAULT PRIVILEGES
-IN SCHEMA mgs
-REVOKE ALL ON SEQUENCES
-FROM PUBLIC;
-
-ALTER DEFAULT PRIVILEGES
-IN SCHEMA mgs
-REVOKE ALL ON FUNCTIONS
-FROM PUBLIC;
-
-/*==========================================================
-DEFAULT PRIVILEGES APP READ
-==========================================================*/
-
-ALTER DEFAULT PRIVILEGES
-IN SCHEMA mgs
-GRANT SELECT ON TABLES
+ON TABLES
 TO
     mgs_app_read,
     mgs_bi,
-    mgs_readonly;
-
-/*==========================================================
-DEFAULT PRIVILEGES APP WRITE
-==========================================================*/
+    mgs_readonly,
+    mgs_auditor;
 
 ALTER DEFAULT PRIVILEGES
 IN SCHEMA mgs
@@ -249,6 +225,46 @@ GRANT
     UPDATE
 ON TABLES
 TO
+    mgs_app_write,
+    mgs_automation;
+
+/*==========================================================
+PRIVILEGIOS FUTUROS - SECUENCIAS
+==========================================================*/
+
+ALTER DEFAULT PRIVILEGES
+IN SCHEMA mgs
+REVOKE ALL
+ON SEQUENCES
+FROM PUBLIC;
+
+ALTER DEFAULT PRIVILEGES
+IN SCHEMA mgs
+GRANT
+    USAGE,
+    SELECT
+ON SEQUENCES
+TO
+    mgs_admin,
+    mgs_app_write,
+    mgs_automation;
+
+/*==========================================================
+PRIVILEGIOS FUTUROS - FUNCIONES
+==========================================================*/
+
+ALTER DEFAULT PRIVILEGES
+IN SCHEMA mgs
+REVOKE ALL
+ON FUNCTIONS
+FROM PUBLIC;
+
+ALTER DEFAULT PRIVILEGES
+IN SCHEMA mgs
+GRANT EXECUTE
+ON FUNCTIONS
+TO
+    mgs_admin,
     mgs_app_write,
     mgs_automation;
 
@@ -267,7 +283,17 @@ BEGIN
     )
     THEN
         RAISE EXCEPTION
-            'No fue posible crear mgs_app_read';
+        'No fue posible crear mgs_app_read';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_roles
+        WHERE rolname = 'mgs_app_write'
+    )
+    THEN
+        RAISE EXCEPTION
+        'No fue posible crear mgs_app_write';
     END IF;
 
     IF NOT EXISTS (
@@ -277,10 +303,17 @@ BEGIN
     )
     THEN
         RAISE EXCEPTION
-            'No fue posible crear mgs_bi';
+        'No fue posible crear mgs_bi';
     END IF;
 
 END;
 $$;
+
+/*==========================================================
+AUDITORÍA DE ESTADO
+==========================================================*/
+
+COMMENT ON SCHEMA mgs IS
+'Esquema protegido mediante V012 Security Hardening';
 
 COMMIT;
