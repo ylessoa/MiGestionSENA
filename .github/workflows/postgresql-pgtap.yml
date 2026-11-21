@@ -53,17 +53,41 @@ jobs:
 
       - name: Mostrar estructura del proyecto
         run: |
+          set -euo pipefail
+
           pwd
           ls -la
           find database -type f | sort
 
+      - name: Verificar archivos requeridos
+        run: |
+          set -euo pipefail
+
+          test -f database/schema/V001__schema.sql
+          test -f database/schema/V002__catalogos.sql
+          test -f database/schema/V003__modelo_mgs.sql
+          test -f database/schema/V004__catalogo_tarea_esencial.sql
+          test -f database/schema/V005__roles_permisos.sql
+          test -f database/schema/V006__indices.sql
+          test -f database/schema/V007__vistas.sql
+          test -f database/schema/V008__functions_validation.sql
+          test -f database/schema/V012__security_hardening.sql
+
+          test -f database/test/V009__pgtap_setup.sql
+          test -f database/test/V010__pgtap_tests.sql
+          test -f database/test/V011__pgtap_teardown.sql
+
       - name: Instalar cliente PostgreSQL
         run: |
+          set -euo pipefail
+
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
       - name: Esperar PostgreSQL
         run: |
+          set -euo pipefail
+
           for i in {1..30}
           do
             pg_isready -h localhost -p 5432 -U postgres && exit 0
@@ -75,11 +99,14 @@ jobs:
 
       - name: Instalar pgTAP
         run: |
+          set -euo pipefail
+
           sudo apt-get update
           sudo apt-get install -y pgtap
 
       - name: Registrar versiones
         run: |
+          set -euo pipefail
 
           {
             echo "=== POSTGRES ==="
@@ -90,18 +117,22 @@ jobs:
 
             psql \
               -v ON_ERROR_STOP=1 \
-              -c "CREATE EXTENSION IF NOT EXISTS pgtap;"
+              -c "CREATE EXTENSION IF NOT EXISTS pgtap CASCADE;"
 
             psql \
               -v ON_ERROR_STOP=1 \
-              -c "SELECT extname, extversion FROM pg_extension WHERE extname='pgtap';"
+              -c "
+                SELECT extname,
+                       extversion
+                FROM pg_extension
+                WHERE extname = 'pgtap';
+              "
 
           } | tee evidence/01_versions.txt
 
       - name: Ejecutar migraciones esquema
         run: |
-
-          set -e
+          set -euo pipefail
 
           for file in \
             database/schema/V001__schema.sql \
@@ -111,20 +142,38 @@ jobs:
             database/schema/V005__roles_permisos.sql \
             database/schema/V006__indices.sql \
             database/schema/V007__vistas.sql \
-            database/schema/V008__functions_validation.sql
+            database/schema/V008__functions_validation.sql \
+            database/schema/V012__security_hardening.sql
           do
-            echo ""
-            echo "============================================"
+
+            echo
+            echo "=========================================="
             echo "Ejecutando: $file"
-            echo "============================================"
+            echo "=========================================="
 
             psql \
               -v ON_ERROR_STOP=1 \
               -f "$file"
+
           done | tee evidence/02_schema_output.txt
+
+      - name: Verificar roles V012
+        run: |
+          set -euo pipefail
+
+          psql \
+            -v ON_ERROR_STOP=1 \
+            -c "
+              SELECT rolname
+              FROM pg_roles
+              WHERE rolname LIKE 'mgs_%'
+              ORDER BY rolname;
+            " \
+            | tee evidence/07_roles_output.txt
 
       - name: Ejecutar setup pgTAP
         run: |
+          set -euo pipefail
 
           psql \
             -v ON_ERROR_STOP=1 \
@@ -133,6 +182,7 @@ jobs:
 
       - name: Ejecutar pruebas pgTAP
         run: |
+          set -euo pipefail
 
           psql \
             -v ON_ERROR_STOP=1 \
@@ -142,6 +192,7 @@ jobs:
       - name: Ejecutar teardown
         if: always()
         run: |
+          set -euo pipefail
 
           mkdir -p evidence
 
@@ -153,6 +204,7 @@ jobs:
       - name: Registrar commit
         if: always()
         run: |
+          set -euo pipefail
 
           git rev-parse HEAD \
             | tee evidence/06_git_commit.txt
