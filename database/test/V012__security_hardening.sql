@@ -28,6 +28,43 @@ Compatible con PostgreSQL 16
 BEGIN;
 
 /*==========================================================
+VERIFICAR ROLES BASE
+==========================================================*/
+
+DO
+$$
+BEGIN
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_roles
+        WHERE rolname = 'mgs_admin'
+    )
+    THEN
+        RAISE EXCEPTION
+            USING
+                ERRCODE = '42501',
+                MESSAGE =
+                'Rol requerido no existe: mgs_admin';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_roles
+        WHERE rolname = 'mgs_readonly'
+    )
+    THEN
+        RAISE EXCEPTION
+            USING
+                ERRCODE = '42501',
+                MESSAGE =
+                'Rol requerido no existe: mgs_readonly';
+    END IF;
+
+END;
+$$;
+
+/*==========================================================
 ROLES ESPECIALIZADOS
 ==========================================================*/
 
@@ -129,7 +166,7 @@ TO
     mgs_readonly;
 
 /*==========================================================
-LECTURA OPERATIVA
+LECTURA
 ==========================================================*/
 
 GRANT SELECT
@@ -167,7 +204,7 @@ TO
     mgs_automation;
 
 /*==========================================================
-FUNCIONES DEL ESQUEMA
+FUNCIONES
 ==========================================================*/
 
 GRANT EXECUTE
@@ -186,7 +223,7 @@ TO
     mgs_automation;
 
 /*==========================================================
-PROHIBICIÓN EXPLÍCITA
+RESTRICCIÓN EXPLÍCITA
 ==========================================================*/
 
 REVOKE EXECUTE
@@ -198,7 +235,7 @@ FROM
     mgs_data_quality;
 
 /*==========================================================
-PRIVILEGIOS FUTUROS - TABLAS
+DEFAULT PRIVILEGES - TABLAS
 ==========================================================*/
 
 ALTER DEFAULT PRIVILEGES
@@ -229,7 +266,7 @@ TO
     mgs_automation;
 
 /*==========================================================
-PRIVILEGIOS FUTUROS - SECUENCIAS
+DEFAULT PRIVILEGES - SECUENCIAS
 ==========================================================*/
 
 ALTER DEFAULT PRIVILEGES
@@ -250,7 +287,7 @@ TO
     mgs_automation;
 
 /*==========================================================
-PRIVILEGIOS FUTUROS - FUNCIONES
+DEFAULT PRIVILEGES - FUNCIONES
 ==========================================================*/
 
 ALTER DEFAULT PRIVILEGES
@@ -269,7 +306,7 @@ TO
     mgs_automation;
 
 /*==========================================================
-VERIFICACIONES
+VERIFICACIONES FINALES
 ==========================================================*/
 
 DO
@@ -283,7 +320,7 @@ BEGIN
     )
     THEN
         RAISE EXCEPTION
-        'No fue posible crear mgs_app_read';
+            'No fue posible crear mgs_app_read';
     END IF;
 
     IF NOT EXISTS (
@@ -293,7 +330,7 @@ BEGIN
     )
     THEN
         RAISE EXCEPTION
-        'No fue posible crear mgs_app_write';
+            'No fue posible crear mgs_app_write';
     END IF;
 
     IF NOT EXISTS (
@@ -303,14 +340,24 @@ BEGIN
     )
     THEN
         RAISE EXCEPTION
-        'No fue posible crear mgs_bi';
+            'No fue posible crear mgs_bi';
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_roles
+        WHERE rolname = 'mgs_auditor'
+    )
+    THEN
+        RAISE EXCEPTION
+            'No fue posible crear mgs_auditor';
     END IF;
 
 END;
 $$;
 
 /*==========================================================
-AUDITORÍA DE ESTADO
+MARCA DE HARDENING
 ==========================================================*/
 
 COMMENT ON SCHEMA mgs IS
