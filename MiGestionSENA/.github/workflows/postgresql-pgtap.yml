@@ -1,0 +1,166 @@
+name: PostgreSQL 16 - Validación de pgTAP
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+
+  postgres-validation:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    services:
+
+      postgres:
+
+        image: postgres:16
+
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: migracionsena
+
+        ports:
+          - 5432:5432
+
+        options: >-
+          --health-cmd "pg_isready -U postgres -d migracionsena"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGDATABASE: migracionsena
+      PGUSER: postgres
+      PGPASSWORD: postgres
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Crear carpeta evidencia
+        run: |
+          mkdir -p evidence
+
+      - name: Mostrar estructura del proyecto
+        run: |
+          pwd
+          ls -la
+          find database -type f | sort
+
+      - name: Instalar cliente PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Esperar PostgreSQL
+        run: |
+          for i in {1..30}
+          do
+            pg_isready -h localhost -p 5432 -U postgres && exit 0
+            sleep 2
+          done
+
+          echo "PostgreSQL no responde"
+          exit 1
+
+      - name: Instalar pgTAP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pgtap
+
+      - name: Registrar versiones
+        run: |
+
+          {
+            echo "=== POSTGRES ==="
+            psql --version
+
+            echo
+            echo "=== EXTENSIONES ==="
+
+            psql \
+              -v ON_ERROR_STOP=1 \
+              -c "CREATE EXTENSION IF NOT EXISTS pgtap;"
+
+            psql \
+              -v ON_ERROR_STOP=1 \
+              -c "SELECT extname, extversion FROM pg_extension WHERE extname='pgtap';"
+
+          } | tee evidence/01_versions.txt
+
+      - name: Ejecutar migraciones esquema
+        run: |
+
+          set -e
+
+          for file in \
+            database/schema/V001__schema.sql \
+            database/schema/V002__catalogos.sql \
+            database/schema/V003__modelo_mgs.sql \
+            database/schema/V004__catalogo_tarea_esencial.sql \
+            database/schema/V005__roles_permisos.sql \
+            database/schema/V006__indices.sql \
+            database/schema/V007__vistas.sql \
+            database/schema/V008__functions_validation.sql
+          do
+            echo ""
+            echo "============================================"
+            echo "Ejecutando: $file"
+            echo "============================================"
+
+            psql \
+              -v ON_ERROR_STOP=1 \
+              -f "$file"
+          done | tee evidence/02_schema_output.txt
+
+      - name: Ejecutar setup pgTAP
+        run: |
+
+          psql \
+            -v ON_ERROR_STOP=1 \
+            -f database/test/V009__pgtap_setup.sql \
+            | tee evidence/03_setup_output.txt
+
+      - name: Ejecutar pruebas pgTAP
+        run: |
+
+          psql \
+            -v ON_ERROR_STOP=1 \
+            -f database/test/V010__pgtap_tests.sql \
+            | tee evidence/04_pgtap_output.txt
+
+      - name: Ejecutar teardown
+        if: always()
+        run: |
+
+          mkdir -p evidence
+
+          psql \
+            -v ON_ERROR_STOP=1 \
+            -f database/test/V011__pgtap_teardown.sql \
+            | tee evidence/05_teardown_output.txt
+
+      - name: Registrar commit
+        if: always()
+        run: |
+
+          git rev-parse HEAD \
+            | tee evidence/06_git_commit.txt
+
+      - name: Publicar artefactos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postgres-pgtap-evidence
+          path: evidence/**
+          if-no-files-found: warn
