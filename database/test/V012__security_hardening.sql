@@ -41,11 +41,9 @@ BEGIN
         WHERE rolname = 'mgs_admin'
     )
     THEN
-        RAISE EXCEPTION
-            USING
-                ERRCODE = '42501',
-                MESSAGE =
-                'Rol requerido no existe: mgs_admin';
+        RAISE EXCEPTION USING
+            ERRCODE = '42501',
+            MESSAGE = 'Rol requerido no existe: mgs_admin';
     END IF;
 
     IF NOT EXISTS (
@@ -54,11 +52,9 @@ BEGIN
         WHERE rolname = 'mgs_readonly'
     )
     THEN
-        RAISE EXCEPTION
-            USING
-                ERRCODE = '42501',
-                MESSAGE =
-                'Rol requerido no existe: mgs_readonly';
+        RAISE EXCEPTION USING
+            ERRCODE = '42501',
+            MESSAGE = 'Rol requerido no existe: mgs_readonly';
     END IF;
 
 END;
@@ -166,7 +162,7 @@ TO
     mgs_readonly;
 
 /*==========================================================
-LECTURA
+LECTURA OPERATIVA
 ==========================================================*/
 
 GRANT SELECT
@@ -204,7 +200,7 @@ TO
     mgs_automation;
 
 /*==========================================================
-FUNCIONES
+FUNCIONES DEL ESQUEMA
 ==========================================================*/
 
 GRANT EXECUTE
@@ -223,19 +219,12 @@ TO
     mgs_automation;
 
 /*==========================================================
-RESTRICCIÓN EXPLÍCITA
-==========================================================*/
+DEFAULT PRIVILEGES
 
-REVOKE EXECUTE
-ON ALL FUNCTIONS IN SCHEMA mgs
-FROM
-    mgs_readonly,
-    mgs_bi,
-    mgs_auditor,
-    mgs_data_quality;
-
-/*==========================================================
-DEFAULT PRIVILEGES - TABLAS
+IMPORTANTE:
+ALTER DEFAULT PRIVILEGES aplica únicamente
+a objetos creados posteriormente por el rol
+que ejecuta esta migración.
 ==========================================================*/
 
 ALTER DEFAULT PRIVILEGES
@@ -355,12 +344,5 @@ BEGIN
 
 END;
 $$;
-
-/*==========================================================
-MARCA DE HARDENING
-==========================================================*/
-
-COMMENT ON SCHEMA mgs IS
-'Esquema protegido mediante V012 Security Hardening';
 
 COMMIT;
