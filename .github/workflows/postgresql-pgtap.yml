@@ -20,7 +20,7 @@ jobs:
 
       postgres:
 
-        image: postgres:16
+        image: ghcr.io/ylessoa/migestionsena-postgres-pgtap:16
 
         env:
           POSTGRES_USER: postgres
