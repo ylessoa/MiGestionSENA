@@ -175,7 +175,7 @@ $$,
 SELECT lives_ok(
 $$
 SELECT mgs.fn_assert_column_definition(
-    p_schema=>'test_mgs_types',
+    p_schema => 'test_mgs_types'
     p_table=>'t_text_array',
     p_column=>'etiquetas',
     p_expected_array_elem=>'pg_catalog.text'
