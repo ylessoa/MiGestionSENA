@@ -22,7 +22,29 @@ Compatible con PostgreSQL 16
 EXTENSIÓN PGTAP
 ==========================================================*/
 
-CREATE EXTENSION IF NOT EXISTS pgtap;
+DO
+$$
+BEGIN
+
+    IF EXISTS (
+        SELECT 1
+        FROM pg_available_extensions
+        WHERE name = 'pgtap'
+    )
+    THEN
+
+        EXECUTE
+        'CREATE EXTENSION IF NOT EXISTS pgtap';
+
+    ELSE
+
+        RAISE NOTICE
+        'pgTAP no disponible en este entorno';
+
+    END IF;
+
+END;
+$$;
 
 /*==========================================================
 ESQUEMA DE PRUEBAS
