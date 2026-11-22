@@ -33,14 +33,39 @@ BEGIN
     )
     THEN
 
-        EXECUTE
-        'CREATE EXTENSION IF NOT EXISTS pgtap';
+        CREATE EXTENSION IF NOT EXISTS pgtap;
 
     ELSE
 
-        RAISE NOTICE
+        RAISE EXCEPTION
         'pgTAP no disponible en este entorno';
 
+    END IF;
+
+END;
+$$;
+
+/*==========================================================
+VALIDACIÓN FUNCIONES PGTAP
+==========================================================*/
+
+DO
+$$
+BEGIN
+
+    IF to_regprocedure('plan(integer)') IS NULL THEN
+        RAISE EXCEPTION
+        'Función pgTAP no encontrada: plan(integer)';
+    END IF;
+
+    IF to_regprocedure('finish()') IS NULL THEN
+        RAISE EXCEPTION
+        'Función pgTAP no encontrada: finish()';
+    END IF;
+
+    IF to_regprocedure('ok(boolean,text)') IS NULL THEN
+        RAISE EXCEPTION
+        'Función pgTAP no encontrada: ok(boolean,text)';
     END IF;
 
 END;
