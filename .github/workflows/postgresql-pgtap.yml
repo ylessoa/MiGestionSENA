@@ -21,9 +21,7 @@ jobs:
       postgres:
 
         image: ghcr.io/ylessoa/migestionsena-postgres-pgtap:16
-        credentials:
-          username: ylessoa
-          password: ${{ secrets.GHCR_PAT }}
+        
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
