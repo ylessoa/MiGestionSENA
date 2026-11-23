@@ -46,26 +46,21 @@ END;
 $$;
 
 /*==========================================================
-VALIDACIÓN FUNCIONES PGTAP
+VALIDACIÓN PGTAP
 ==========================================================*/
 
 DO
 $$
 BEGIN
 
-    IF to_regprocedure('plan(integer)') IS NULL THEN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_extension
+        WHERE extname = 'pgtap'
+    )
+    THEN
         RAISE EXCEPTION
-        'Función pgTAP no encontrada: plan(integer)';
-    END IF;
-
-    IF to_regprocedure('finish()') IS NULL THEN
-        RAISE EXCEPTION
-        'Función pgTAP no encontrada: finish()';
-    END IF;
-
-    IF to_regprocedure('ok(boolean,text)') IS NULL THEN
-        RAISE EXCEPTION
-        'Función pgTAP no encontrada: ok(boolean,text)';
+        'La extensión pgTAP no quedó instalada';
     END IF;
 
 END;
