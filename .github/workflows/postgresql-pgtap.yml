@@ -91,19 +91,6 @@ jobs:
           echo "PostgreSQL no responde"
           exit 1
 
-      - name: Instalar pgTAP cliente
-        run: |
-          set -euo pipefail
-
-          sudo apt-get update
-          sudo apt-get install -y pgtap
-
-      - name: Localizar pgtap.control
-        run: |
-          set -euo pipefail
-
-          find /usr/share -name "pgtap.control" || true
-
       - name: Registrar versiones
         run: |
           set -euo pipefail
@@ -113,11 +100,22 @@ jobs:
             psql --version
 
             echo
-            echo "=== BASE DE DATOS ==="
+            echo "=== SERVER VERSION ==="
 
             psql \
               -v ON_ERROR_STOP=1 \
               -c "SELECT version();"
+
+            echo
+            echo "=== PGTAP DISPONIBLE ==="
+
+            psql \
+              -v ON_ERROR_STOP=1 \
+              -c "
+                SELECT name
+                FROM pg_available_extensions
+                WHERE name = 'pgtap';
+              "
 
           } | tee evidence/01_versions.txt
 
@@ -183,7 +181,7 @@ jobs:
       - name: Ejecutar teardown
         if: always()
         run: |
-          set -euo pipefail
+          mkdir -p evidence
 
           psql \
             -v ON_ERROR_STOP=1 \
@@ -193,7 +191,7 @@ jobs:
       - name: Registrar commit
         if: always()
         run: |
-          set -euo pipefail
+          mkdir -p evidence
 
           git rev-parse HEAD \
             | tee evidence/06_git_commit.txt
