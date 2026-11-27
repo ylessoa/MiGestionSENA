@@ -70,9 +70,9 @@ RETURNS TABLE(
 
     root_type_name text,
 
-    declared_typtype char,
+    declared_typtype text,
 
-    root_typtype char,
+    root_typtype text,
 
     is_array boolean,
 
@@ -150,10 +150,11 @@ BEGIN
 
         format_type(root_t.oid,NULL),
 
-        declared_t.typtype,
+        declared_t.typtype::text,
+        
+        root_t.typtype::text,
 
-        root_t.typtype,
-
+    
         (root_t.typelem <> 0),
 
         NULLIF(root_t.typelem,0),
@@ -510,8 +511,8 @@ DECLARE
     v_parent_root oid;
     v_child_root oid;
 
-    v_parent_typtype char;
-    v_child_typtype char;
+    v_parent_typtype text;
+    v_child_typtype text;
 
     v_parent_element oid;
     v_child_element oid;
