@@ -70,9 +70,9 @@ RETURNS TABLE(
 
     root_type_name text,
 
-    declared_typtype text,
-
-    root_typtype text,
+    declared_t.typtype::text,
+    
+    root_t.typtype::text
 
     is_array boolean,
 
@@ -216,8 +216,8 @@ DECLARE
 
     v_type_oid oid;
 
-    v_declared_typtype char;
-    v_root_typtype char;
+    declared_typtype text
+    root_typtype text
 
     v_root_oid oid;
     v_root_name text;
