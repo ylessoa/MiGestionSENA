@@ -1,0 +1,13 @@
+{
+  "forms": [
+    {
+      "name": "Gestión Actividad",
+      "sections": [
+        "Datos Actividad",
+        "Responsable",
+        "Fechas",
+        "Seguimiento"
+      ]
+    }
+  ]
+}
