@@ -1,0 +1,12 @@
+{
+  "schemaName": "mgs_clasevinculacion",
+  "displayName": "Clase Vinculación",
+  "options": [
+    { "value": 100000000, "label": "Funcionario" },
+    { "value": 100000001, "label": "Contratista" },
+    { "value": 100000002, "label": "Instructor" },
+    { "value": 100000003, "label": "Aprendiz" },
+    { "value": 100000004, "label": "Directivo" },
+    { "value": 100000005, "label": "Coordinador" }
+  ]
+}
