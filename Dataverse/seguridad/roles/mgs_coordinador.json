@@ -1,0 +1,21 @@
+{
+  "role": "MGS Coordinador",
+  "scope": "BusinessUnit",
+  "entities": [
+    "mgs_actividad",
+    "mgs_proyecto",
+    "mgs_compromisodesempeno",
+    "mgs_obligacioncontractual",
+    "mgs_evidencia"
+  ],
+  "permissions": {
+    "create": true,
+    "read": true,
+    "write": true,
+    "delete": false,
+    "append": true,
+    "appendTo": true,
+    "assign": false,
+    "share": true
+  }
+}
