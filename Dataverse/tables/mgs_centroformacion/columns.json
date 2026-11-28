@@ -1,0 +1,31 @@
+{
+  "columns": [
+    {
+      "schemaName": "mgs_codigocentro",
+      "displayName": "Código Centro",
+      "type": "Text",
+      "required": true,
+      "maxLength": 20
+    },
+    {
+      "schemaName": "mgs_nombre",
+      "displayName": "Nombre",
+      "type": "Text",
+      "required": true,
+      "maxLength": 250
+    },
+    {
+      "schemaName": "mgs_regional",
+      "displayName": "Regional",
+      "type": "Text",
+      "required": true,
+      "maxLength": 150
+    },
+    {
+      "schemaName": "mgs_activo",
+      "displayName": "Activo",
+      "type": "Boolean",
+      "required": true
+    }
+  ]
+}
