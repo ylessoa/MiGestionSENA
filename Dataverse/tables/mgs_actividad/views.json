@@ -1,0 +1,8 @@
+{
+  "views": [
+    { "name": "Mis Actividades de Hoy" },
+    { "name": "Actividades Pendientes" },
+    { "name": "Próximas a Vencer" },
+    { "name": "Finalizadas" }
+  ]
+}
