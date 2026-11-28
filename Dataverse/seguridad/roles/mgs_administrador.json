@@ -1,0 +1,14 @@
+{
+  "role": "MGS Administrador",
+  "scope": "Organization",
+  "permissions": {
+    "create": true,
+    "read": true,
+    "write": true,
+    "delete": true,
+    "append": true,
+    "appendTo": true,
+    "assign": true,
+    "share": true
+  }
+}
