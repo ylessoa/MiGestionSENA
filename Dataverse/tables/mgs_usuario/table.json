@@ -1,0 +1,38 @@
+{
+  "schemaName": "mgs_usuario",
+  "displayName": "Usuario",
+  "ownership": "UserOwned",
+  "primaryName": "mgs_nombrecompleto",
+  "alternateKeys": [
+    "mgs_documento",
+    "mgs_correoinstitucional"
+  ],
+  "columns": [
+    {
+      "schemaName": "mgs_documento",
+      "type": "Text",
+      "maxLength": 20,
+      "required": true
+    },
+    {
+      "schemaName": "mgs_nombrecompleto",
+      "type": "Text",
+      "maxLength": 250,
+      "required": true
+    },
+    {
+      "schemaName": "mgs_correoinstitucional",
+      "type": "Email",
+      "required": true
+    },
+    {
+      "schemaName": "mgs_clasevinculacion",
+      "type": "Choice",
+      "choice": "mgs_clasevinculacion"
+    },
+    {
+      "schemaName": "mgs_activo",
+      "type": "Boolean"
+    }
+  ]
+}
