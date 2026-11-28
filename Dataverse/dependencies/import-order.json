@@ -1,0 +1,59 @@
+{
+  "deploymentOrder": [
+    {
+      "level": 0,
+      "components": [
+        "globalChoices",
+        "environmentVariables"
+      ]
+    },
+    {
+      "level": 1,
+      "components": [
+        "mgs_centroformacion"
+      ]
+    },
+    {
+      "level": 2,
+      "components": [
+        "mgs_dependencia"
+      ]
+    },
+    {
+      "level": 3,
+      "components": [
+        "mgs_usuario"
+      ]
+    },
+    {
+      "level": 4,
+      "components": [
+        "mgs_proyecto",
+        "mgs_compromisodesempeno",
+        "mgs_obligacioncontractual",
+        "mgs_diariogestion",
+        "mgs_auditoria"
+      ]
+    },
+    {
+      "level": 5,
+      "components": [
+        "mgs_actividad"
+      ]
+    },
+    {
+      "level": 6,
+      "components": [
+        "mgs_evidencia"
+      ]
+    },
+    {
+      "level": 7,
+      "components": [
+        "mgs_actividadproyecto",
+        "mgs_actividadcompromiso",
+        "mgs_actividadobligacion"
+      ]
+    }
+  ]
+}
