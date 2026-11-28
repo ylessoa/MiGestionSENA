@@ -1,0 +1,9 @@
+{
+  "schemaName": "mgs_actividad",
+  "displayName": "Actividad",
+  "pluralName": "Actividades",
+  "ownership": "UserOwned",
+  "primaryName": "mgs_titulo",
+  "auditing": true,
+  "changeTracking": true
+}
