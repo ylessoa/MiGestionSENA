@@ -1,0 +1,12 @@
+{
+  "forms": [
+    {
+      "name": "Dependencia",
+      "sections": [
+        "Información General",
+        "Centro Formación",
+        "Estado"
+      ]
+    }
+  ]
+}
