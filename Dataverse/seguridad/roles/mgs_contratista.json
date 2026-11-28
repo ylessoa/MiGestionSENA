@@ -1,0 +1,14 @@
+{
+  "role": "MGS Contratista",
+  "scope": "User",
+  "permissions": {
+    "create": true,
+    "read": true,
+    "write": true,
+    "delete": false,
+    "append": true,
+    "appendTo": true,
+    "assign": false,
+    "share": false
+  }
+}
