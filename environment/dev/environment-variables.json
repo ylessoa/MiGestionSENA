@@ -1,0 +1,13 @@
+{
+  "environment": "DEV",
+  "variables": {
+    "mgs_SharePointSite": "",
+    "mgs_SharePointLibrary": "",
+    "mgs_PowerBIWorkspace": "",
+    "mgs_CenterId": "",
+    "mgs_TenantId": "",
+    "mgs_OutlookSender": "",
+    "mgs_PowerAppUrl": "",
+    "mgs_HelpDeskMail": ""
+  }
+}
