@@ -63,45 +63,30 @@ mgs.fn_resolve_type_hierarchy(
     p_type_oid oid
 )
 RETURNS TABLE(
-
     declared_type_oid oid,
-
     root_type_oid oid,
-
     root_type_name text,
-
-    declared_t.typtype::text,
-    
-    root_t.typtype::text
-
+    declared_typtype text,
+    root_typtype text,
     is_array boolean,
-
     root_element_oid oid,
-
     root_element_name text,
-
     is_range boolean,
-
     is_multirange boolean
-
 )
 LANGUAGE plpgsql
 STABLE
 AS
 $$
 DECLARE
-
     v_current oid;
     v_depth integer := 0;
-
 BEGIN
 
     IF p_type_oid IS NULL THEN
-
         RAISE EXCEPTION USING
             ERRCODE='22004',
             MESSAGE='OID de tipo no puede ser NULL';
-
     END IF;
 
     v_current := p_type_oid;
@@ -111,11 +96,9 @@ BEGIN
         v_depth := v_depth + 1;
 
         IF v_depth > 32 THEN
-
             RAISE EXCEPTION USING
                 ERRCODE='54001',
                 MESSAGE='Jerarquía de dominios excede profundidad máxima';
-
         END IF;
 
         EXIT
@@ -132,54 +115,39 @@ BEGIN
         WHERE oid = v_current;
 
         IF NOT FOUND THEN
-
             RAISE EXCEPTION USING
                 ERRCODE='42704',
                 MESSAGE='Tipo intermedio no encontrado';
-
         END IF;
 
     END LOOP;
 
     RETURN QUERY
     SELECT
-
         p_type_oid,
-
         root_t.oid,
-
-        format_type(root_t.oid,NULL),
-
+        format_type(root_t.oid, NULL),
         declared_t.typtype::text,
-        
         root_t.typtype::text,
-
-    
         (root_t.typelem <> 0),
-
-        NULLIF(root_t.typelem,0),
-
+        NULLIF(root_t.typelem, 0),
         CASE
             WHEN root_t.typelem <> 0
-            THEN format_type(root_t.typelem,NULL)
+                THEN format_type(root_t.typelem, NULL)
             ELSE NULL
         END,
-
         EXISTS (
             SELECT 1
             FROM pg_range r
             WHERE r.rngtypid = root_t.oid
         ),
-
         EXISTS (
             SELECT 1
             FROM pg_range r
             WHERE r.rngmultitypid = root_t.oid
         )
-
     FROM pg_type declared_t
     CROSS JOIN pg_type root_t
-
     WHERE declared_t.oid = p_type_oid
       AND root_t.oid = v_current;
 
@@ -216,8 +184,8 @@ DECLARE
 
     v_type_oid oid;
 
-    declared_typtype text
-    root_typtype text
+    v_declared_typtype text;
+    v_root_typtype text;
 
     v_root_oid oid;
     v_root_name text;
