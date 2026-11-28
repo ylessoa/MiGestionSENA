@@ -1,0 +1,7 @@
+{
+  "views": [
+    { "name": "Usuarios Activos" },
+    { "name": "Usuarios por Dependencia" },
+    { "name": "Usuarios Sin Acceso Reciente" }
+  ]
+}
