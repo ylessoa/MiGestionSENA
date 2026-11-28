@@ -1,0 +1,8 @@
+{
+  "schemaName": "mgs_auditoria",
+  "displayName": "Auditoría",
+  "pluralName": "Auditorías",
+  "ownership": "OrganizationOwned",
+  "primaryName": "mgs_tabla",
+  "auditing": false
+}
