@@ -1,0 +1,17 @@
+{
+  "tables": [
+    "mgs_centroformacion",
+    "mgs_dependencia",
+    "mgs_usuario",
+    "mgs_proyecto",
+    "mgs_actividad",
+    "mgs_compromisodesempeno",
+    "mgs_obligacioncontractual",
+    "mgs_evidencia",
+    "mgs_diariogestion",
+    "mgs_auditoria",
+    "mgs_actividadproyecto",
+    "mgs_actividadcompromiso",
+    "mgs_actividadobligacion"
+  ]
+}
