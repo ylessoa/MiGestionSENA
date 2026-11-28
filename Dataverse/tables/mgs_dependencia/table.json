@@ -1,0 +1,9 @@
+{
+  "schemaName": "mgs_dependencia",
+  "displayName": "Dependencia",
+  "pluralName": "Dependencias",
+  "ownership": "OrganizationOwned",
+  "primaryName": "mgs_nombre",
+  "auditing": true,
+  "changeTracking": true
+}
