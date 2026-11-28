@@ -1,0 +1,13 @@
+{
+  "solution": "MiGestionSENA",
+  "publisher": "mgs",
+  "version": "1.0.0.0",
+  "tables": 13,
+  "choices": 5,
+  "relationships": {
+    "oneToMany": 8,
+    "manyToMany": 3
+  },
+  "securityRoles": 6,
+  "environmentVariables": 8
+}
