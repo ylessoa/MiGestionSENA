@@ -1,0 +1,12 @@
+{
+  "views": [
+    {
+      "name": "Centros Activos",
+      "columns": [
+        "mgs_codigocentro",
+        "mgs_nombre",
+        "mgs_regional"
+      ]
+    }
+  ]
+}
