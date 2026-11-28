@@ -1,0 +1,14 @@
+{
+  "role": "MGS Auditor",
+  "scope": "Organization",
+  "permissions": {
+    "create": false,
+    "read": true,
+    "write": false,
+    "delete": false,
+    "append": false,
+    "appendTo": false,
+    "assign": false,
+    "share": false
+  }
+}
