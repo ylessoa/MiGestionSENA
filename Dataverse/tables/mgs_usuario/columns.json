@@ -1,0 +1,18 @@
+{
+  "columns": [
+    {
+      "schemaName": "mgs_documento",
+      "displayName": "Documento",
+      "type": "Text",
+      "required": true,
+      "maxLength": 20
+    },
+    {
+      "schemaName": "mgs_nombrecompleto",
+      "displayName": "Nombre Completo",
+      "type": "Text",
+      "required": true,
+      "maxLength": 250
+    }
+  ]
+}
