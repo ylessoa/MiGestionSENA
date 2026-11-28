@@ -1,0 +1,18 @@
+{
+  "forms": [
+    {
+      "name": "Información General",
+      "sections": [
+        {
+          "name": "Datos Básicos",
+          "fields": [
+            "mgs_codigocentro",
+            "mgs_nombre",
+            "mgs_regional",
+            "mgs_activo"
+          ]
+        }
+      ]
+    }
+  ]
+}
