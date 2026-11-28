@@ -1,0 +1,13 @@
+{
+  "solutionName": "MiGestionSENA",
+  "publisher": "mgs",
+  "version": "1.0.0.0",
+  "managedInTest": true,
+  "managedInProd": true,
+  "managedInDev": false,
+  "environmentStrategy": [
+    "DEV",
+    "TEST",
+    "PROD"
+  ]
+}
