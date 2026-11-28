@@ -1,0 +1,6 @@
+{
+  "views": [
+    { "name": "Evidencias Recientes" },
+    { "name": "Evidencias Pendientes" }
+  ]
+}
