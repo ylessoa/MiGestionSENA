@@ -1,0 +1,10 @@
+{
+  "schemaName": "mgs_prioridad",
+  "displayName": "Prioridad",
+  "options": [
+    { "value": 100000000, "label": "Baja" },
+    { "value": 100000001, "label": "Media" },
+    { "value": 100000002, "label": "Alta" },
+    { "value": 100000003, "label": "Crítica" }
+  ]
+}
