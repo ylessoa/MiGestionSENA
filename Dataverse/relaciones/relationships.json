@@ -1,0 +1,34 @@
+{
+  "oneToMany": [
+    {
+      "schemaName": "mgs_CentroFormacion_mgs_Dependencia",
+      "parent": "mgs_centroformacion",
+      "child": "mgs_dependencia",
+      "lookup": "mgs_centroformacionid"
+    },
+    {
+      "schemaName": "mgs_Dependencia_mgs_Usuario",
+      "parent": "mgs_dependencia",
+      "child": "mgs_usuario",
+      "lookup": "mgs_dependenciaid"
+    },
+    {
+      "schemaName": "mgs_Usuario_mgs_Actividad",
+      "parent": "mgs_usuario",
+      "child": "mgs_actividad",
+      "lookup": "mgs_responsableid"
+    },
+    {
+      "schemaName": "mgs_Usuario_mgs_Proyecto",
+      "parent": "mgs_usuario",
+      "child": "mgs_proyecto",
+      "lookup": "mgs_responsableid"
+    },
+    {
+      "schemaName": "mgs_Actividad_mgs_Evidencia",
+      "parent": "mgs_actividad",
+      "child": "mgs_evidencia",
+      "lookup": "mgs_actividadid"
+    }
+  ]
+}
