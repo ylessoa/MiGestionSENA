@@ -1,0 +1,19 @@
+{
+  "role": "MGS Supervisor",
+  "scope": "BusinessUnit",
+  "entities": [
+    "mgs_actividad",
+    "mgs_obligacioncontractual",
+    "mgs_evidencia"
+  ],
+  "permissions": {
+    "create": true,
+    "read": true,
+    "write": true,
+    "delete": false,
+    "append": true,
+    "appendTo": true,
+    "assign": false,
+    "share": true
+  }
+}
