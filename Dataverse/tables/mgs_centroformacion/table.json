@@ -1,0 +1,9 @@
+{
+  "schemaName": "mgs_centroformacion",
+  "displayName": "Centro Formación",
+  "pluralName": "Centros Formación",
+  "ownership": "OrganizationOwned",
+  "auditing": true,
+  "changeTracking": true,
+  "primaryName": "mgs_nombre"
+}
