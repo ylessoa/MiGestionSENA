@@ -1,0 +1,15 @@
+{
+  "schemaName": "mgs_tipodocumento",
+  "displayName": "Tipo Documento",
+  "options": [
+    { "value": 100000000, "label": "PDF" },
+    { "value": 100000001, "label": "Word" },
+    { "value": 100000002, "label": "Excel" },
+    { "value": 100000003, "label": "Imagen" },
+    { "value": 100000004, "label": "Acta" },
+    { "value": 100000005, "label": "Informe" },
+    { "value": 100000006, "label": "Contrato" },
+    { "value": 100000007, "label": "Correo" },
+    { "value": 100000008, "label": "Otro" }
+  ]
+}
