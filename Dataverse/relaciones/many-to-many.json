@@ -1,0 +1,19 @@
+{
+  "manyToMany": [
+    {
+      "intersectionTable": "mgs_actividadproyecto",
+      "left": "mgs_actividad",
+      "right": "mgs_proyecto"
+    },
+    {
+      "intersectionTable": "mgs_actividadcompromiso",
+      "left": "mgs_actividad",
+      "right": "mgs_compromisodesempeno"
+    },
+    {
+      "intersectionTable": "mgs_actividadobligacion",
+      "left": "mgs_actividad",
+      "right": "mgs_obligacioncontractual"
+    }
+  ]
+}
