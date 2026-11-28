@@ -1,0 +1,11 @@
+{
+  "schemaName": "mgs_estadoactividad",
+  "displayName": "Estado Actividad",
+  "options": [
+    { "value": 100000000, "label": "Planificada" },
+    { "value": 100000001, "label": "En Curso" },
+    { "value": 100000002, "label": "Bloqueada" },
+    { "value": 100000003, "label": "Finalizada" },
+    { "value": 100000004, "label": "Cancelada" }
+  ]
+}
