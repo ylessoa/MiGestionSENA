@@ -1,0 +1,12 @@
+{
+  "schemaName": "mgs_accionauditoria",
+  "displayName": "Acción Auditoría",
+  "options": [
+    { "value": 100000000, "label": "Crear" },
+    { "value": 100000001, "label": "Actualizar" },
+    { "value": 100000002, "label": "Eliminar" },
+    { "value": 100000003, "label": "Consultar" },
+    { "value": 100000004, "label": "Compartir" },
+    { "value": 100000005, "label": "Asignar" }
+  ]
+}
